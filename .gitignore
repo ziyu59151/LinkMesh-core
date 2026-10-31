@@ -1,0 +1,35 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors
+.vscode/
+.idea/
+
+# Native builds
+build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+native/linkmesh_scorec_helper/linkmesh-scorec-helper
+
+# Generated meshes, plots, logs and release artifacts
+*.h5
+*.hdf5
+*.smb
+*.png
+*.log
+dist/
+linkmesh-release-*
+
+# Local inputs and credentials
+.env
+*.secret
+*.local

@@ -1,0 +1,25 @@
+# Copy this template into a Case directory and rename it to linkmesh.in.
+# Replace equilibrium.gfile with the actual GFile filename.
+# Explicit CLI arguments override values in this file.
+
+schema_version = 1
+
+[task]
+target = "m3dc1"
+
+[input]
+gfile = "equilibrium.gfile"
+
+[domain]
+boundary_source = "lcfs"
+
+[mesh]
+mesh_dx = 0.08
+
+[output]
+model = "mesh.txt"
+smb = "mesh.smb"
+plot = "mesh.png"
+
+[runtime]
+verbose = true
