@@ -7,7 +7,7 @@ name = "linkmesh"
 version = "0.2.0"
 description = "Tokamak R-Z triangular mesh generation for TRIMEG and M3D-C1"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.24",
     "openfusiontoolkit==26.6",

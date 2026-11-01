@@ -9,3 +9,4 @@ def test_package_version_matches_project_metadata() -> None:
     metadata = tomllib.loads(project.read_text(encoding="utf-8"))
 
     assert __version__ == metadata["project"]["version"]
+    assert metadata["project"]["requires-python"] == ">=3.11"

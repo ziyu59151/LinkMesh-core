@@ -6,6 +6,8 @@ already manage HPC software that way.
 
 ## Virtual environment
 
+LinkMesh requires Python 3.11 or newer.
+
 Create and verify the environment:
 
 ```bash
