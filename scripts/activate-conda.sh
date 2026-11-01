@@ -15,10 +15,8 @@ conda activate linkmesh
 export LINKMESH_ROOT="$_linkmesh_root"
 if [[ -x "$CONDA_PREFIX/bin/linkmesh-scorec-helper" ]]; then
   export LINKMESH_SCOREC_HELPER="$CONDA_PREFIX/bin/linkmesh-scorec-helper"
-fi
-
-if command -v nc >/dev/null 2>&1 && nc -z -w 1 127.0.0.1 17897 2>/dev/null; then
-  export LINKMESH_GITHUB_PROXY="http://127.0.0.1:17897"
+else
+  unset LINKMESH_SCOREC_HELPER
 fi
 
 unset _linkmesh_root _conda_base

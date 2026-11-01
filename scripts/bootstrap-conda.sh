@@ -15,5 +15,7 @@ conda activate linkmesh
 python -m pip install --upgrade pip
 python -m pip install -e "${repo_root}[all,dev]"
 python -m pip check
+linkmesh-check core
 
-printf 'LinkMesh environment ready: %s\n' "$CONDA_PREFIX"
+printf 'LinkMesh Conda environment ready: %s\n' "$CONDA_PREFIX"
+printf 'Activate later with: source %s/scripts/activate-conda.sh\n' "$repo_root"

@@ -1,5 +1,9 @@
 # LinkMesh usage and M3D-C1 mesh workflow
 
+Repository-specific environment instructions are in
+[`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md). The virtual environment is the
+default deployment path; Conda is optional.
+
 ## Installation and dependencies
 
 LinkMesh generates triangular meshes in the R-Z plane, with coordinates and mesh sizes in metres. It supports mesh-only plots, TRIMEG HDF5, and M3D-C1 model TXT plus PUMI SMB output.
