@@ -22,21 +22,53 @@ linkmesh-check core
 
 `pyproject.toml` declares `openfusiontoolkit==26.6`; pip installs OFT and its compiled libraries. An OFT source checkout is not required. LinkMesh uses OFT's Python meshing interface, including version-specific boundary handling, so retain the 26.6 version pin. If no compatible wheel exists for your platform, build and install OFT 26.6 separately. Do not add its raw source directory to PYTHONPATH.
 
-Python code needs no compilation. M3D-C1 SMB output additionally requires the compiled `linkmesh-scorec-helper`, which links SCOREC/PUMI 2.2.9 and MPI. It does not require M3DC1 source or `m3dc1_scorec`.
+### Native SMB helper and PUMI
+
+The Python mesh, PNG, TRIMEG HDF5, and model TXT paths need no native helper.
+M3D-C1 SMB output additionally requires the compiled
+`linkmesh-scorec-helper`, which links SCOREC/PUMI 2.2.9 and MPI.
+
+PUMI is a site dependency. LinkMesh does not download, build, or install PUMI
+as part of `pip install`, `bootstrap-venv.sh`, or `bootstrap-conda.sh`.
+Users with an existing M3D-C1 installation normally already have PUMI, but the
+installation must provide:
+
+- SCOREC/PUMI exactly version 2.2.9.
+- The SCOREC CMake package at
+  `<pumi-prefix>/lib/cmake/SCOREC/SCORECConfig.cmake` or
+  `<pumi-prefix>/lib64/cmake/SCOREC/SCORECConfig.cmake`.
+- CMake 3.20 or newer and a C++17 MPI compiler wrapper.
+- An MPI build compatible with the helper, partitioner, and M3D-C1.
+
+Expose the PUMI prefix explicitly and build the helper in the active LinkMesh
+environment:
 
 ```bash
-cmake -S native/linkmesh_scorec_helper -B build/helper \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_PREFIX_PATH=/path/to/pumi \
-  -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" \
-  -DCMAKE_INSTALL_RPATH=/path/to/pumi/lib
-cmake --build build/helper -j 4
-cmake --install build/helper
-export LINKMESH_SCOREC_HELPER="$VIRTUAL_ENV/bin/linkmesh-scorec-helper"
-linkmesh-check all
+source scripts/activate-venv.sh
+export PUMI_ROOT=/path/to/pumi-2.2.9
+./scripts/build-smb-helper.sh
+linkmesh-check m3dc1
 ```
 
-Use compatible MPI builds for PUMI, the helper, partitioner and solver. The checker validates imports and native library resolution; it does not test M3D-C1 initialization or time stepping.
+The build script also checks prefixes listed in `CMAKE_PREFIX_PATH` and uses
+`spack location -i pumi@2.2.9` when Spack is already available. These are
+read-only discovery mechanisms; the script never installs PUMI.
+
+If the MPI wrapper is not on `PATH`, set it explicitly. Intel MPI also
+requires `I_MPI_ROOT` so that the compiler wrapper can locate its installation:
+
+```bash
+export I_MPI_ROOT=/path/to/intel/mpi
+export MPI_CXX="$I_MPI_ROOT/bin/mpiicpx"
+export PUMI_ROOT=/path/to/pumi-2.2.9
+# The Intel MPI wrapper also needs the compiler executable, e.g. icpx:
+export PATH=/path/to/oneapi/compiler/bin:"$PATH"
+./scripts/build-smb-helper.sh
+```
+
+See [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md#native-smb-helper) for
+discovery rules and troubleshooting. The checker validates imports and native
+library resolution; it does not test M3D-C1 initialization or time stepping.
 
 ## Typical installation layout
 
@@ -44,7 +76,7 @@ Use compatible MPI builds for PUMI, the helper, partitioner and solver. The chec
 - Python environment: `$VIRTUAL_ENV`
 - Commands and native helper: `$VIRTUAL_ENV/bin`
 - Native build directory: `$LINKMESH_ROOT/build/helper`
-- PUMI prefix: `/path/to/pumi`
+- User-supplied PUMI prefix: `/path/to/pumi-2.2.9`
 
 ```bash
 export PATH="$VIRTUAL_ENV/bin:$PATH"
@@ -52,11 +84,9 @@ linkmesh-check all
 linkmesh --help
 ```
 
-The helper was built with system OpenMPI and an install RPATH pointing to the PUMI lib directory. The original binary-release helper required Intel MPI and could not run in this environment; use the rebuilt helper.
-
-When moving the installation to another host, rebuild the native SMB helper
-against that host's PUMI and MPI installation and set the install RPATH
-accordingly.
+The native helper is host-specific. Rebuild it against the target host's PUMI
+and MPI environment rather than copying a helper built for a different MPI
+installation.
 
 ## Boundary file format
 
